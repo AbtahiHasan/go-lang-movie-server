@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,6 +22,23 @@ type Director struct {
 }
 
 var movies []Movie
+
+
+func getMovies (w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(movies)
+}
+
+func deleteMovie (w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for index, movie := range movies {
+		if movie.Id == params["id"] {
+			movies = append(movies[:index],  movies[index + 1:]...)
+			break
+		}
+	}
+}
 
 func main() {
 	r := mux.NewRouter()
