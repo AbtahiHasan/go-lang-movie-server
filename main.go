@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -38,6 +39,16 @@ func deleteMovie (w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+	json.NewEncoder(w).Encode(movies)
+}
+
+func createMovie (w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var movie Movie
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	movie.Id = strconv.Itoa(len(movies) + 1)
+	movies = append(movies, movie)
+	json.NewEncoder(w).Encode(movies)
 }
 
 func getMovie (w http.ResponseWriter, r *http.Request) {
@@ -46,10 +57,12 @@ func getMovie (w http.ResponseWriter, r *http.Request) {
 	for _, movie := range movies {
 		if movie.Id == params["id"] {
 			json.NewEncoder(w).Encode(movie)
-			break
+			return
 		}
 	}
 }
+
+
 
 
 func main() {
